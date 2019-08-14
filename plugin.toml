@@ -1,0 +1,4 @@
+[plugin]
+description = "dokku storage copy plugin"
+version = "0.0.1"
+[plugin.config]

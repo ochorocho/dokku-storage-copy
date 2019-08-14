@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+
+STORAGE="$2"
+STORAGE_TARGET="$3"
+
+print_help(){
+  cat<<EOF
+  
+Usage: dokku storage[:copy]
+
+    Copy/clone existing storage folder.
+
+Additional commands:  
+    storage:copy <storage source path> <storage target path>, Copy a existing storage
+    
+EOF
+  return
+}
+
+check_storage() {
+  if [[ ! -d "$STORAGE" ]]; then
+    echo "You must specify a existing storage source (absolute path)"
+    exit 1
+  fi
+}
+
+check_storage_target() {
+  if [[ -z "$STORAGE_TARGET" ]]; then
+    echo "You must specify a existing storage target (absolute path)"
+    exit 1
+  fi
+}
+
+spinner()
+{
+    local pid=$!
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+case "$1" in
+  storage:copy)
+
+  	check_storage
+  	check_storage_target  	
+
+    echo "Copy storage from $STORAGE to $STORAGE_TARGET"
+
+	cp -Rp $STORAGE $STORAGE_TARGET
+    ;;
+
+  help | storage:help)
+    if [[ -n $DOKKU_API_VERSION ]]; then
+      print_help
+    else
+      cat && print_help
+    fi
+    ;;
+
+  *)
+    exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
+    ;;
+
+esac
