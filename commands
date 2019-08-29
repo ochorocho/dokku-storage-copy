@@ -15,6 +15,7 @@ Usage: dokku storage[:copy]
 
 Additional commands:  
     storage:copy <storage source path> <storage target path>, Copy a existing storage
+    storage:exists <storage source path>, Check if mount source exists
     
 EOF
   return
@@ -22,7 +23,7 @@ EOF
 
 check_storage() {
   if [[ ! -d "$STORAGE" ]]; then
-    echo "You must specify a existing storage source (absolute path)"
+    echo "You must specify a existing storage (absolute path)"
     exit 1
   fi
 }
@@ -34,30 +35,32 @@ check_storage_target() {
   fi
 }
 
-spinner()
-{
-    local pid=$!
-    local delay=0.75
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
+storage_target_exists() {
+  if [[ -d "$STORAGE_TARGET" ]]; then
+    echo "Storage target $STORAGE_TARGET already exists."
+    exit 1
+  fi
 }
 
 case "$1" in
   storage:copy)
-
   	check_storage
-  	check_storage_target  	
+  	check_storage_target
+  	storage_target_exists
 
     echo "Copy storage from $STORAGE to $STORAGE_TARGET"
-
 	cp -Rp $STORAGE $STORAGE_TARGET
+    ;;
+
+  storage:remove)
+  	check_storage
+
+    echo "Remove storage folder $STORAGE ..."
+	rm -Rf $STORAGE
+    ;;
+
+  storage:exists)
+  	check_storage
     ;;
 
   help | storage:help)
