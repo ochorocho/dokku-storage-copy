@@ -15,7 +15,7 @@ Usage: dokku storage[:copy]
 
 Additional commands:  
     storage:copy <storage source path> <storage target path>, Copy a existing storage
-    storage:exists <storage source path>, Check if mount source exists
+    storage:remove <storage source path>, Delete a folder
     
 EOF
   return
@@ -56,11 +56,8 @@ case "$1" in
   	check_storage
 
     echo "Remove storage folder $STORAGE ..."
-	rm -Rf $STORAGE
-    ;;
-
-  storage:exists)
-  	check_storage
+	# Add "%dokku ALL=(ALL) NOPASSWD:/bin/rm -rf /var/lib/dokku/data/storage/*" to a new sudoers file in /etc/sudoers.d/
+	sudo /bin/rm -rf $STORAGE
     ;;
 
   help | storage:help)
