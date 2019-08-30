@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+export PLUGIN_COMMAND_PREFIX="storage-copy"
+export _SUDOERS_FILE="/etc/sudoers.d/dokku-${PLUGIN_COMMAND_PREFIX}"
