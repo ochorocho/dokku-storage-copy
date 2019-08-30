@@ -5,6 +5,7 @@ set -eo pipefail
 
 plugin-install() {
 
+  PLUGIN_COMMAND_PREFIX="storage-copy"
   rm -f "/etc/sudoers.d/dokku-${PLUGIN_COMMAND_PREFIX}*"
   _SUDOERS_FILE="/etc/sudoers.d/dokku-${PLUGIN_COMMAND_PREFIX}"
 
