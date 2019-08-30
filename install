@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config"
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+plugin-install() {
+
+  rm -f "/etc/sudoers.d/dokku-${PLUGIN_COMMAND_PREFIX}*"
+  _SUDOERS_FILE="/etc/sudoers.d/dokku-${PLUGIN_COMMAND_PREFIX}"
+
+  touch "$_SUDOERS_FILE"
+  cat >"$_SUDOERS_FILE" <<EOL
+%dokku ALL=(ALL) NOPASSWD:/bin/rm -rf /var/lib/dokku/data/storage/*
+EOL
+
+  chmod 0440 "$_SUDOERS_FILE"
+}
+
+plugin-install "$@"
